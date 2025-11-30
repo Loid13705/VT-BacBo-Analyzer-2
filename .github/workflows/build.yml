@@ -1,0 +1,38 @@
+name: Build VT BacBo Analyzer
+
+on:
+  push:
+    tags: ['v*']
+  release:
+    types: [created]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+        
+    - name: Create logo
+      run: python scripts/create_logo.py
+      
+    - name: Build executable
+      run: python scripts/compile.py
+      
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: VT_BacBo_Analyzer_Windows
+        path: dist/VT_BacBo_Analyzer.exe
